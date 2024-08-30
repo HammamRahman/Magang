@@ -1,5 +1,6 @@
 <?php
 require 'database.php';
+require 'cek.php';
 
 // Cek apakah parameter 'id' tersedia
 if (isset($_GET['id'])) {
