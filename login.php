@@ -6,89 +6,102 @@ if (isset($_POST['login'])) {
     $password = ($_POST['password']);
 
     // Menggunakan password hash untuk keamanan
-    $cekdata = mysqli_query($conn, "SELECT * FROM login WHERE email='$email' and password='$password'");
+    $cekdata = mysqli_query($conn, "SELECT * FROM login WHERE email='$email' ");//and password='$password'
     $hitung = mysqli_num_rows($cekdata);
 
     if ($hitung > 0) {
+        $data = mysqli_fetch_assoc($cekdata);
+        $hashed_password = $data['password'];
         // Verifikasi password
-        if ($password = 'password') {
+        if ($password == $data['password']) {
             $_SESSION['log'] = 'True';
-            header('Location: dashboard.php');
+            header('Location: data.php');
             exit(); // Pastikan skrip berhenti setelah redirect
         } else {
             // Jika password salah
-            header('Location: login.php?error=wrongpassword');
-            exit();
+            $_SESSION['error'] = 'Password salah!';
         }
     } else {
         // Jika email tidak ditemukan
-        header('Location: login.php?error=usernotfound');
-        exit();
+        $_SESSION['error'] = 'Akun tidak terdaftar, periksa kembali akun anda!';
     }
+
+    header('Location: login.php'); // Redirect kembali ke halaman login
+    exit();
 };
 
 if(isset($_SESSION['log'])){
-    header('Location: dashboard.php');
-}
+    header('Location: data.php');
+};
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="" />
-        <meta name="author" content="" />
-        <title>Login-ContractManagement</title>
-        <link href="css/styles.css" rel="stylesheet" />
-        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-    </head>
-    <body class="bg-primary">
-        <div id="layoutAuthentication">
-            <div id="layoutAuthentication_content">
-                <main>
-                    <div class="container">
-                        <div class="row justify-content-center">
-                            <div class="col-lg-5">
-                                <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Login</h3></div>
-                                    <div class="card-body">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Login</title>
+    <link href="css/styles.css" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+</head>
+<body class="bg-primary">
+    <div id="layoutAuthentication">
+        <div id="layoutAuthentication_content">
+            <main>
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-5">
+                            <div class="card shadow-lg border-0 rounded-lg mt-5">
+                                <div class="card-header">
+                                    <h3 class="text-center font-weight-light my-4">Login</h3>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Menampilkan pesan error -->
+                                    <?php if (isset($_SESSION['error'])): ?>
+                                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                            <?php echo $_SESSION['error']; ?>
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                        <?php unset($_SESSION['error']); // Hapus pesan setelah ditampilkan ?>
+                                    <?php endif; ?>
+
                                     <form method="post" action="login.php">
                                         <div class="form-floating mb-3">
-                                            <input class="form-control" name="email" id="email" type="email" placeholder="name@example.com" required>
-                                            <label for="email">Email address</label>
+                                            <input class="form-control" name="email" id="inputEmailAddress" type="email" placeholder="Enter email address" required>
+                                            <label for="inputEmailAddress">Email address</label>
                                         </div>
                                         <div class="form-floating mb-3">
-                                            <input class="form-control" name="password" id="password" type="password" placeholder="Password" required>
-                                            <label for="password">Password</label>
+                                            <input class="form-control" name="password" id="inputPassword" type="password" placeholder="Enter Password" required>
+                                            <label for="inputPassword">Password</label>
                                         </div>
-                                        <div class="d-flex align-items-center justify-content-end mt-4 mb-0">
+                                        <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
                                             <button class="btn btn-primary" type="submit" name="login">Login</button>
                                         </div>
                                     </form>
                                 </div>
-                                    <!--
-                                    <div class="card-footer text-center py-3">
-                                        <div class="small"><a href="register.html">Need an account? Sign up!</a></div>
-                                    </div>
-                                    -->
+                                <div class="card-footer text-center py-3">
+                                    <!-- <div class="small"><a href="register.html">Need an account? Sign up!</a></div> -->
                                 </div>
                             </div>
                         </div>
                     </div>
-                </main>
-            </div>
-            <div id="layoutAuthentication_footer">
-                <footer class="py-4 bg-light mt-auto">
-                    <div class="container-fluid px-4">
-                        <div class="d-flex align-items-center justify-content-between small">
-                        </div>
-                    </div>
-                </footer>
-            </div>
+                </div>
+            </main>
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-        <script src="js/scripts.js"></script>
-    </body>
+        <div id="layoutAuthentication_footer">
+            <footer class="py-4 bg-light mt-auto">
+                <div class="container-fluid px-4">
+                    <div class="d-flex align-items-center justify-content-between small">
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="js/scripts.js"></script>
+</body>
 </html>
