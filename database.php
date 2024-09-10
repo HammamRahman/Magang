@@ -1,6 +1,6 @@
 <?php
 session_start();
-$conn = mysqli_connect("localhost", "root", "1234", "reminder");
+$conn = mysqli_connect("localhost", "root", " ", "database");
 /*
 if($conn){
     echo 'berhasil';
